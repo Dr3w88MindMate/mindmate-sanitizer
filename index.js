@@ -1,20 +1,21 @@
 // index.js
 const express = require('express');
-const bodyParser = require('body-parser');
 const app = express();
-app.use(bodyParser.json());
+
+// Use express.text() to handle raw text input on the /sanitize route
+app.use('/sanitize', express.text());
 
 app.post('/sanitize', (req, res) => {
-  let { text } = req.body;
+  const text = req.body; // This is now plain text
 
   if (typeof text !== 'string') {
     return res.status(400).json({ error: 'Input must be a string.' });
   }
 
-  // Remove emojis (basic emoji range), replace newlines with spaces
+  // Sanitize: remove emojis and replace newlines with spaces
   const sanitized = text
-    .replace(/[\p{Emoji_Presentation}\p{Emoji}\u200d]+/gu, '') // Remove emojis (unicode emoji sequences)
-    .replace(/[\n\r]+/g, ' ') // Replace newlines with space
+    .replace(/[\p{Emoji_Presentation}\p{Emoji}\u200d]+/gu, '') // Remove emojis
+    .replace(/[\n\r]+/g, ' ') // Replace newlines with spaces
     .trim();
 
   res.json({ sanitized });
