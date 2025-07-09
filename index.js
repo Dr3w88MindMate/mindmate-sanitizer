@@ -5,13 +5,17 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post('/sanitize', (req, res) => {
-  const { input } = req.body;
+  let { text } = req.body;
 
-  if (typeof input !== 'string') {
+  if (typeof text !== 'string') {
     return res.status(400).json({ error: 'Input must be a string.' });
   }
 
-  const sanitized = JSON.stringify(input); // Escapes emojis, quotes, newlines
+  // Remove emojis (basic emoji range), replace newlines with spaces
+  const sanitized = text
+    .replace(/[\p{Emoji_Presentation}\p{Emoji}\u200d]+/gu, '') // Remove emojis (unicode emoji sequences)
+    .replace(/[\n\r]+/g, ' ') // Replace newlines with space
+    .trim();
 
   res.json({ sanitized });
 });
