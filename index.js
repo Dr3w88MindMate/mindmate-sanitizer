@@ -12,9 +12,11 @@ app.post('/sanitize', (req, res) => {
     return res.status(400).json({ error: 'Input must be a string.' });
   }
 
-  // Sanitize: remove emojis and replace newlines with spaces
+  // Sanitize: remove emojis, escape quotes and backslashes, replace newlines with spaces
   const sanitized = text
     .replace(/[\p{Emoji_Presentation}\p{Emoji}\u200d]+/gu, '') // Remove emojis
+    .replace(/\\/g, '\\\\') // Escape backslashes
+    .replace(/"/g, '\\"')   // Escape double quotes
     .replace(/[\n\r]+/g, ' ') // Replace newlines with spaces
     .trim();
 
